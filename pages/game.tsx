@@ -1,24 +1,41 @@
 import { NextPage } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import getWinnerIndexes from "../lib/game/get-winner-indexes";
+import { database } from "../firebase.config";
+import { ref, set, onValue, DataSnapshot } from "firebase/database"
 
 const Game: NextPage = () => {
-  const [squares, setSquares] = useState(Array(9))
+  const [snapshot, setSnapshot] = useState<DataSnapshot>()
+  const [squares, setSquares] = useState<(string | undefined)[]>(Array(9))
   const [XIsNext, setXIsNext] = useState(true)
   const [winner, setWinner] = useState<string>()
 
   const handleClick = (i: number) => {
-    const s = squares.slice()
-    s[i] = XIsNext ? "X" : "O"
-    setSquares(s)
-
-    const winnerIndexes = getWinnerIndexes(s)
-    if (typeof winnerIndexes?.at(0) === "number") {
-      setWinner(s[winnerIndexes[0]])
-    } else {
-      setXIsNext(!XIsNext)
-    }
+    set(ref(database, "/test"), {
+      squares: { ...squares, [i]: XIsNext ? "X" : "O" },
+      XIsNext: !XIsNext
+    }).catch((error) => console.error(error))
   }
+
+  useEffect(() => {
+    onValue(ref(database, "/test"), setSnapshot)
+  }, [])
+
+  useEffect(() => {
+    const data = snapshot?.val()
+    if (!data) return
+    const { squares, XIsNext } = data
+
+    setSquares(squares)
+    setXIsNext(XIsNext)
+  }, [snapshot])
+
+  useEffect(() => {
+    const wins = getWinnerIndexes(squares)
+    if (typeof wins?.at(0) === "number") {
+      setWinner(squares[wins[0]])
+    }
+  }, [squares])
 
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-4">
