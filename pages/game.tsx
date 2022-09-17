@@ -24,6 +24,7 @@ const Game: NextPage = () => {
   useEffect(() => {
     const data = snapshot?.val()
     if (!data) return
+
     const { game_squares, x_is_next } = data
 
     setSquares(game_squares)
