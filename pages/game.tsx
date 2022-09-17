@@ -4,22 +4,22 @@ import getWinnerIndexes from "../lib/game/get-winner-indexes"
 import { database } from "../firebase.config"
 import { ref, set, onValue, DataSnapshot } from "firebase/database"
 
-const Game: NextPage = () => {
+const Game: NextPage<{ room: string }> = ({ room }) => {
   const [snapshot, setSnapshot] = useState<DataSnapshot>()
   const [squares, setSquares] = useState<(string | undefined)[]>(Array(9))
   const [XIsNext, setXIsNext] = useState(true)
   const [winner, setWinner] = useState<string>()
 
   const handleClick = (i: number) => {
-    set(ref(database, "/test"), {
+    set(ref(database, `/${room}`), {
       game_squares: { ...squares, [i]: XIsNext ? "X" : "O" },
       x_is_next: !XIsNext
     }).catch((error) => console.error(error))
   }
 
   useEffect(() => {
-    onValue(ref(database, "/test"), setSnapshot)
-  }, [])
+    onValue(ref(database, `/${room}`), setSnapshot)
+  }, [room])
 
   useEffect(() => {
     const data = snapshot?.val()
