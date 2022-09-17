@@ -2,12 +2,14 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useRouter } from "next/router"
 import { FormEventHandler, MouseEventHandler } from "react"
+import getRandomCharacter from "../lib/get-random-character"
 
 const Home: NextPage = () => {
   const { push } = useRouter()
 
   const handleCreateClick: MouseEventHandler<HTMLButtonElement> = () => {
-    push('abcdef')
+    const room = Array.from({ length: 6 }, () => getRandomCharacter()).join("")
+    push(room)
   }
 
   const handleJoinSubmit: FormEventHandler<HTMLFormElement> = (event) => {
