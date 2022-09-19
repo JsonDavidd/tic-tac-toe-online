@@ -6,7 +6,7 @@ import { ref, set, onValue, DataSnapshot } from "firebase/database"
 
 const Game: NextPage<{ room: string }> = ({ room }) => {
   const [snapshot, setSnapshot] = useState<DataSnapshot>()
-  const [squares, setSquares] = useState<(string | undefined)[]>(Array(9))
+  const [squares, setSquares] = useState<{ [key: number]: string }>({})
   const [XIsNext, setXIsNext] = useState(true)
   const [winner, setWinner] = useState<string>()
 
@@ -42,11 +42,11 @@ const Game: NextPage<{ room: string }> = ({ room }) => {
       <div className="w-[75vw] h-[75vw] mx-auto bg-gray-800">
         <div className="h-full grid grid-rows-3 grid-cols-3 gap-2">
           {Array.from({ length: 9 }, (x, i) => (
-            <button key={i} onClick={() => winner || squares[i] || handleClick(i)} about={XIsNext ? "X" : "O"}
-              className="text-7xl font-normal bg-white 
+            <button key={i} onClick={() => winner || Object.hasOwn(squares, i) || handleClick(i)}
+              about={XIsNext ? "X" : "O"} className="text-7xl font-normal bg-white 
                 empty:before:content-[attr(about)] before:text-gray-400 
                 empty:before:opacity-0 hover:before:opacity-100 empty:before:transition-opacity">
-              {squares[i]}
+              {!Object.hasOwn(squares, i) ? "" : squares[i]}
             </button>
           ))}
         </div>
