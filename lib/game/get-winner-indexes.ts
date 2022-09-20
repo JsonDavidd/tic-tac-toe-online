@@ -1,4 +1,4 @@
-const getWinnerIndexes = (squares: (string | undefined)[]) => {
+const getWinnerIndexes = (squares: (boolean | undefined)[]) => {
   const winCases = [
     [0, 1, 2],
     [3, 4, 5],
@@ -9,7 +9,7 @@ const getWinnerIndexes = (squares: (string | undefined)[]) => {
     [0, 4, 8],
     [2, 4, 6]
   ]
-  return winCases.find(([a, b, c]) => typeof squares[a] === "string"
+  return winCases.find(([a, b, c]) => typeof squares[a] === "boolean"
     && squares[a] === squares[b] && squares[a] === squares[c])
 }
 
