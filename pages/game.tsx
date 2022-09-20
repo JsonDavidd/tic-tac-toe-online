@@ -60,7 +60,8 @@ const Game: NextPage<{ room: string }> = ({ room }) => {
 
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-4">
-      <div className="w-[75vw] h-[75vw] mx-auto bg-gray-800">
+      <span className="absolute left-2 top-4">Room Id: {room}</span>
+      <div className="w-[75vw] h-[75vw] max-w-[400px] max-h-[400px] mx-auto bg-gray-800">
         <div className="h-full grid grid-rows-3 grid-cols-3 gap-2">
           {Array.from({ length: 9 }, (x, i) => (
             <button key={i} onClick={() => !Object.hasOwn(squares, i) && isPlayerNext && handleClick(i)}
