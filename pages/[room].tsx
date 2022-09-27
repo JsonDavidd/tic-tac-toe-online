@@ -1,6 +1,6 @@
 import { NextPage } from "next"
 import { useRouter } from "next/router"
-import Game from "./game"
+import Game from "../components/game"
 
 const Room: NextPage = () => {
   const { query } = useRouter()

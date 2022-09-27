@@ -1,10 +1,10 @@
-import { NextPage } from "next"
+import { NextComponentType } from "next"
 import { useEffect, useState } from "react"
 import getWinnerIndexes from "../lib/game/get-winner-indexes"
 import { database } from "../firebase.config"
 import { ref, set, update, onValue, DataSnapshot } from "firebase/database"
 
-const Game: NextPage<{ room: string }> = ({ room }) => {
+const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   const [snapshot, setSnapshot] = useState<DataSnapshot>()
   const [squares, setSquares] = useState<{ [key: number]: boolean }>({})
   const [isPlayer1Next, setIsPlayer1Next] = useState(true)
