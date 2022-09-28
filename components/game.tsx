@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import getWinnerIndexes from "../lib/game/get-winner-indexes"
 import { database } from "../firebase.config"
 import { ref, update, onValue, DataSnapshot, remove, } from "firebase/database"
+import Link from "next/link"
 
 const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   const [snapshot, setSnapshot] = useState<DataSnapshot>()
@@ -84,6 +85,9 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
       <span className="text-4xl">
         {isPlayer1Next ? "X" : "O"} {winner ? "Won" : "Next"}
       </span>
+      <Link href="/">
+        <a className="absolute left-2 bottom-4">Go Home</a>
+      </Link>
     </div>
   )
 }
