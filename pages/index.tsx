@@ -18,7 +18,9 @@ const Home: NextPage = () => {
 
     const { room } = Object.fromEntries((new FormData(event.currentTarget)).entries())
 
-    push(room as string)
+    if (typeof room === "string") {
+      push(room.toLowerCase())
+    }
   }
 
   return (
