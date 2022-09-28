@@ -2,7 +2,7 @@ import { NextComponentType } from "next"
 import { useEffect, useState } from "react"
 import getWinnerIndexes from "../lib/game/get-winner-indexes"
 import { database } from "../firebase.config"
-import { ref, set, update, onValue, DataSnapshot } from "firebase/database"
+import { ref, update, onValue, DataSnapshot, remove, } from "firebase/database"
 
 const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   const [snapshot, setSnapshot] = useState<DataSnapshot>()
@@ -57,6 +57,14 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
     const cal = isPlayer1 === undefined || winner === undefined && Object.keys(squares).length % 2 === (isPlayer1 ? 0 : 1)
     setIsPlayerNext(Boolean(cal))
   }, [winner, squares, isPlayer1])
+
+  useEffect(() => {
+    if (!isPlayer1) return
+
+    return () => {
+      remove(ref(database, `/${room}`)).catch((error) => console.error(error))
+    }
+  }, [room, isPlayer1])
 
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-4">
