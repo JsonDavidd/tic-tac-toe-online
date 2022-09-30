@@ -2,7 +2,7 @@ import { NextComponentType } from "next"
 import { useEffect, useState } from "react"
 import getWinnerIndexes from "../lib/game/get-winner-indexes"
 import { database } from "../firebase.config"
-import { ref, update, onValue, DataSnapshot, remove, } from "firebase/database"
+import { ref, update, onValue, onChildRemoved, DataSnapshot, remove, child, } from "firebase/database"
 import Link from "next/link"
 
 const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
@@ -12,6 +12,7 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   const [isPlayerNext, setIsPlayerNext] = useState(true)
   const [isPlayer1, setIsPlayer1] = useState<boolean>()
   const [winner, setWinner] = useState<string>()
+  const [isPlayerAlone, setIsPlayerAlone] = useState(false)
 
   const handleClick = (i: number) => {
     if (isPlayer1 === undefined) {
@@ -31,12 +32,18 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   }
 
   useEffect(() => {
-    onValue(ref(database, `/${room}`), setSnapshot)
+    const dbRef = ref(database, `/${room}`)
+    onValue(dbRef, setSnapshot)
+    onChildRemoved(child(dbRef, "/player1_squares_state"), () => setSnapshot(undefined))
   }, [room])
 
   useEffect(() => {
     const data = snapshot?.val()
-    if (!data) return
+    if (!data) {
+      if (isPlayer1 !== false) return
+      setIsPlayerAlone(true)
+      return
+    }
 
     const { player1_squares_state, is_player1_next } = data
 
@@ -55,9 +62,9 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   }, [snapshot, isPlayer1])
 
   useEffect(() => {
-    const cal = isPlayer1 === undefined || winner === undefined && Object.keys(squares).length % 2 === (isPlayer1 ? 0 : 1)
+    const cal = isPlayer1 === undefined || winner === undefined && !isPlayerAlone && Object.keys(squares).length % 2 === (isPlayer1 ? 0 : 1)
     setIsPlayerNext(Boolean(cal))
-  }, [winner, squares, isPlayer1])
+  }, [winner, squares, isPlayer1, isPlayerAlone])
 
   useEffect(() => {
     if (!isPlayer1) return
@@ -70,6 +77,7 @@ const Game: NextComponentType<any, any, { room: string }> = ({ room }) => {
   return (
     <div className="h-screen flex flex-col items-center justify-center gap-4">
       <span className="absolute left-2 top-4">Room Id: {room}</span>
+      <span>{isPlayerAlone && !winner && "Seems like your partner is out"}</span>
       <div className="w-[75vw] h-[75vw] max-w-[400px] max-h-[400px] mx-auto bg-gray-800">
         <div className="h-full grid grid-rows-3 grid-cols-3 gap-2">
           {Array.from({ length: 9 }, (x, i) => (
